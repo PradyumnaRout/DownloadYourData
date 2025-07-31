@@ -15,12 +15,13 @@ struct DownloadYourDataApp: App {
     
     var body: some Scene {
         WindowGroup {
-            DownloadContentView()
+//            HomeView()
+            DownloadListView()
+//            AnyHostingDownloadView()
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {
                     case .active:
                         print("Become Actice")
-//                        DownloadManager.shared.resumeAllRunningTasks()
                     case .background:
                         print("In background")
                     default:

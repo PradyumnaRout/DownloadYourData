@@ -6,27 +6,46 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		27CD7A912E3A1AD40070B87D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27CD7A8A2E3A1AD40070B87D /* Preview Assets.xcassets */; };
+		27CD7A922E3A1AD40070B87D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27CD7A8C2E3A1AD40070B87D /* Assets.xcassets */; };
+		27CD7A942E3A1AD40070B87D /* DownloadItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A7F2E3A1AD40070B87D /* DownloadItemModel.swift */; };
+		27CD7A952E3A1AD40070B87D /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A802E3A1AD40070B87D /* DownloadView.swift */; };
+		27CD7A962E3A1AD40070B87D /* DownloadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A812E3A1AD40070B87D /* DownloadViewModel.swift */; };
+		27CD7A972E3A1AD40070B87D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A822E3A1AD40070B87D /* HomeView.swift */; };
+		27CD7A982E3A1AD40070B87D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A842E3A1AD40070B87D /* AppDelegate.swift */; };
+		27CD7A9A2E3A1AD40070B87D /* MyDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A872E3A1AD40070B87D /* MyDownloadManager.swift */; };
+		27CD7A9B2E3A1AD40070B87D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A8D2E3A1AD40070B87D /* ContentView.swift */; };
+		27CD7A9C2E3A1AD40070B87D /* DownloadYourDataApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7A8E2E3A1AD40070B87D /* DownloadYourDataApp.swift */; };
+		27CD7AA12E3A31170070B87D /* DownloadManagerWithCompletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7AA02E3A31170070B87D /* DownloadManagerWithCompletion.swift */; };
+		27CD7DB02E3A48580070B87D /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7DAF2E3A48580070B87D /* FileManager.swift */; };
+		27CD7DB62E3B5DF10070B87D /* AnyHostConcurrentDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7DB52E3B5DF10070B87D /* AnyHostConcurrentDownloadManager.swift */; };
+		27CD7DB92E3B63210070B87D /* AnyHostingDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CD7DB82E3B63210070B87D /* AnyHostingDownloadView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		273AA5DF2E28D3DA0056182D /* DownloadYourData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DownloadYourData.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		27CD7A7F2E3A1AD40070B87D /* DownloadItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemModel.swift; sourceTree = "<group>"; };
+		27CD7A802E3A1AD40070B87D /* DownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadView.swift; sourceTree = "<group>"; };
+		27CD7A812E3A1AD40070B87D /* DownloadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewModel.swift; sourceTree = "<group>"; };
+		27CD7A822E3A1AD40070B87D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		27CD7A842E3A1AD40070B87D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		27CD7A872E3A1AD40070B87D /* MyDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDownloadManager.swift; sourceTree = "<group>"; };
+		27CD7A8A2E3A1AD40070B87D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		27CD7A8C2E3A1AD40070B87D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		27CD7A8D2E3A1AD40070B87D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		27CD7A8E2E3A1AD40070B87D /* DownloadYourDataApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadYourDataApp.swift; sourceTree = "<group>"; };
+		27CD7A8F2E3A1AD40070B87D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		27CD7AA02E3A31170070B87D /* DownloadManagerWithCompletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManagerWithCompletion.swift; sourceTree = "<group>"; };
+		27CD7DAF2E3A48580070B87D /* FileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
+		27CD7DB52E3B5DF10070B87D /* AnyHostConcurrentDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyHostConcurrentDownloadManager.swift; sourceTree = "<group>"; };
+		27CD7DB82E3B63210070B87D /* AnyHostingDownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyHostingDownloadView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		273AA6022E28DA500056182D /* Exceptions for "DownloadYourData" folder in "DownloadYourData" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 273AA5DE2E28D3DA0056182D /* DownloadYourData */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		273AA5E12E28D3DA0056182D /* DownloadYourData */ = {
+		27CD7A9D2E3A1AF20070B87D /* AppConstants */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				273AA6022E28DA500056182D /* Exceptions for "DownloadYourData" folder in "DownloadYourData" target */,
-			);
-			path = DownloadYourData;
+			path = AppConstants;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -45,7 +64,7 @@
 		273AA5D62E28D3DA0056182D = {
 			isa = PBXGroup;
 			children = (
-				273AA5E12E28D3DA0056182D /* DownloadYourData */,
+				27CD7A902E3A1AD40070B87D /* DownloadYourData */,
 				273AA5E02E28D3DA0056182D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +75,85 @@
 				273AA5DF2E28D3DA0056182D /* DownloadYourData.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		27CD7A832E3A1AD40070B87D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7DB32E3B39E80070B87D /* ViewModel */,
+				27CD7DB42E3B4C820070B87D /* DownloadModel */,
+				27CD7DB72E3B624A0070B87D /* View */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		27CD7A852E3A1AD40070B87D /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7A842E3A1AD40070B87D /* AppDelegate.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		27CD7A892E3A1AD40070B87D /* DownloadMangers */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7DAF2E3A48580070B87D /* FileManager.swift */,
+				27CD7A872E3A1AD40070B87D /* MyDownloadManager.swift */,
+				27CD7AA02E3A31170070B87D /* DownloadManagerWithCompletion.swift */,
+				27CD7DB52E3B5DF10070B87D /* AnyHostConcurrentDownloadManager.swift */,
+			);
+			path = DownloadMangers;
+			sourceTree = "<group>";
+		};
+		27CD7A8B2E3A1AD40070B87D /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7A8A2E3A1AD40070B87D /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		27CD7A902E3A1AD40070B87D /* DownloadYourData */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7A9D2E3A1AF20070B87D /* AppConstants */,
+				27CD7A832E3A1AD40070B87D /* Controllers */,
+				27CD7A852E3A1AD40070B87D /* Core */,
+				27CD7A892E3A1AD40070B87D /* DownloadMangers */,
+				27CD7A8B2E3A1AD40070B87D /* Preview Content */,
+				27CD7A8C2E3A1AD40070B87D /* Assets.xcassets */,
+				27CD7A8D2E3A1AD40070B87D /* ContentView.swift */,
+				27CD7A8E2E3A1AD40070B87D /* DownloadYourDataApp.swift */,
+				27CD7A8F2E3A1AD40070B87D /* Info.plist */,
+			);
+			path = DownloadYourData;
+			sourceTree = "<group>";
+		};
+		27CD7DB32E3B39E80070B87D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7A812E3A1AD40070B87D /* DownloadViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		27CD7DB42E3B4C820070B87D /* DownloadModel */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7A7F2E3A1AD40070B87D /* DownloadItemModel.swift */,
+			);
+			path = DownloadModel;
+			sourceTree = "<group>";
+		};
+		27CD7DB72E3B624A0070B87D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				27CD7A802E3A1AD40070B87D /* DownloadView.swift */,
+				27CD7A822E3A1AD40070B87D /* HomeView.swift */,
+				27CD7DB82E3B63210070B87D /* AnyHostingDownloadView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -74,7 +172,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				273AA5E12E28D3DA0056182D /* DownloadYourData */,
+				27CD7A9D2E3A1AF20070B87D /* AppConstants */,
 			);
 			name = DownloadYourData;
 			packageProductDependencies = (
@@ -122,6 +220,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27CD7A912E3A1AD40070B87D /* Preview Assets.xcassets in Resources */,
+				27CD7A922E3A1AD40070B87D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +232,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27CD7A942E3A1AD40070B87D /* DownloadItemModel.swift in Sources */,
+				27CD7A952E3A1AD40070B87D /* DownloadView.swift in Sources */,
+				27CD7A962E3A1AD40070B87D /* DownloadViewModel.swift in Sources */,
+				27CD7A972E3A1AD40070B87D /* HomeView.swift in Sources */,
+				27CD7A982E3A1AD40070B87D /* AppDelegate.swift in Sources */,
+				27CD7AA12E3A31170070B87D /* DownloadManagerWithCompletion.swift in Sources */,
+				27CD7A9A2E3A1AD40070B87D /* MyDownloadManager.swift in Sources */,
+				27CD7DB02E3A48580070B87D /* FileManager.swift in Sources */,
+				27CD7DB62E3B5DF10070B87D /* AnyHostConcurrentDownloadManager.swift in Sources */,
+				27CD7A9B2E3A1AD40070B87D /* ContentView.swift in Sources */,
+				27CD7A9C2E3A1AD40070B87D /* DownloadYourDataApp.swift in Sources */,
+				27CD7DB92E3B63210070B87D /* AnyHostingDownloadView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +386,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -304,6 +417,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

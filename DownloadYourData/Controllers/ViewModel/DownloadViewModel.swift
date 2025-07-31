@@ -12,7 +12,7 @@ class DownloadViewModel: ObservableObject {
     @Published var downloads: [DownloadItem] = []
 
     init() {
-        for (i, url) in AppConstants.urls.enumerated() {
+        for (i, url) in AppConstants.videoUrls.enumerated() {
             downloads.append(DownloadItem(url: url, fileName: "File\(i+1).bin"))
         }
 

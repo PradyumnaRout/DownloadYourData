@@ -6,155 +6,118 @@
 //
 
 import Foundation
-import UIKit
+
 
 class MyDownloadManager: NSObject, ObservableObject {
     
-    static var shared = MyDownloadManager()
-    
+    static let shared = MyDownloadManager()
     private var urlSession: URLSession!
+    
+    /// Maps URLSessionDownloadTask taskIdentifier → DownloadItem
     private var taskMap: [Int: DownloadItem] = [:]
     
-    private var runningTasks: [Int: URLSessionDownloadTask] = [:]
-    private var pendingQueue: [DownloadItem] = []
-        
-    private let maxConcurrentDownloads = 3
-    private var backgroundCompletionHandlers: [String: () -> Void] = [:]
+    /// Running downloads currently active: taskIdentifier → task
+    private var runningTasks: [UUID: URLSessionDownloadTask] = [:]
     
+    /// Maximum Conucurrent Download
+    private let maxConcurrentDownloads = 3
+    
+    /// All downloads managed by the manager. It will observed by the UI
     @Published var downloads: [DownloadItem] = []
     
     private override init() {
         super.init()
-        let config = URLSessionConfiguration.background(withIdentifier: "MyDowload.background.tasks")
+        let config = URLSessionConfiguration.default  // Use default for testing concurrency
         config.httpMaximumConnectionsPerHost = maxConcurrentDownloads
-        config.sessionSendsLaunchEvents = true
-        // Warning: Make sure that the URLSession is created only once (if an URLSession still
-        // exists from a previous download, it doesn't create a new URLSession object but returns
-        // the existing one with the old delegate object attached)
-        
-        urlSession = URLSession(configuration: config, delegate: self, delegateQueue: .main)
+        urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
     }
     
-    func enqueueDownloads(urls: [URL]) {
-        for (i, url) in urls.enumerated() {
-            let item = DownloadItem(url: url, fileName: "File\(i + 1).\(url.pathExtension)")
-            downloads.append(item)
-            pendingQueue.append(item)
+    
+    // MARK: - Public Downloading Methods
+
+    // Start or Resume Download
+    func statrtDownload(item: DownloadItem) {
+        guard item.status == .pending else { return }
+        
+        // Mark the item as in progress and reset/resend current progress
+        item.status = .inProgress
+        item.progress = item.progress
+        
+        let task: URLSessionDownloadTask
+        if let resumeData = item.resumeData {
+            // Resume the download with the previous resume data
+            task = urlSession.downloadTask(withResumeData: resumeData)
+            item.resumeData = nil
+        } else {
+            // Start new download
+            task = urlSession.downloadTask(with: item.url)
         }
-        startNextDownloadsIfNeeded()
-    }
-    
-    private func startNextDownloadsIfNeeded() {
-        while runningTasks.count < maxConcurrentDownloads && !pendingQueue.isEmpty {
-            let item = pendingQueue.removeFirst()
-            startDownload(item)
-        }
-    }
-    
-    private func startDownload(_ item: DownloadItem) {
-        var updatedItem = item
-        updatedItem.status = .inProgress
         
-        guard let index = downloads.firstIndex(where: { $0.id == item.id }) else { return }
-        downloads[index] = updatedItem
-        
-        let task = urlSession.downloadTask(with: item.url)
-        taskMap[task.taskIdentifier] = updatedItem
-        runningTasks[task.taskIdentifier] = task
-        
+        runningTasks[item.id] = task
+        taskMap[task.taskIdentifier] = item
         task.resume()
+        
     }
+    
+    
+    /// Pause an in-progress download, saving resuke data if supported.
+    func pauseDownload(item: DownloadItem) {
+        guard item.status == .inProgress else { return }
+        
+        if let task = runningTasks[item.id] {
+            // Cancel the task, but provide the resume data
+            task.cancel { data in
+                item.status = .pending
+                item.resumeData = data
+                item.progress = item.progress
+                self.updateProgress(for: item)
+                
+                
+                // Remove bookkeeping for the task
+                self.runningTasks.removeValue(forKey: item.id)
+                self.taskMap.removeValue(forKey: task.taskIdentifier)
+            }
+        }
+    }
+    
+    
+    /// Cancel the download
+    func cancelDownload(_ item: DownloadItem) {
+        item.status = .pending
+        item.progress = 0
+        item.resumeData = nil
 
-    private func updateProgress(for task: URLSessionDownloadTask, progress: Float) {
-        guard var item = taskMap[task.taskIdentifier],
-              let index = downloads.firstIndex(where: { $0.id == item.id }) else { return }
-        
-        item.progress = progress
-        downloads[index] = item
-    }
-    
-    private func complete(task: URLSessionDownloadTask, success: Bool) {
-        guard var item = taskMap[task.taskIdentifier],
-              let index = downloads.firstIndex(where: { $0.id == item.id }) else { return }
-        
-        item.status = success ? .completed : .failed
-        item.progress = 1.0
-        downloads[index] = item
-        
-        taskMap.removeValue(forKey: task.taskIdentifier)
-        runningTasks.removeValue(forKey: task.taskIdentifier)
-        
-        startNextDownloadsIfNeeded()
-    }
-    
-    // The below two will call
-    func storeCompletionHandler(_ identifier: String, _ handler: @escaping () -> Void) {
-        backgroundCompletionHandlers[identifier] = handler
-        print("Storing Completion.....")
-    }
+        if let task = runningTasks[item.id] {
+            task.cancel()
+            runningTasks.removeValue(forKey: item.id)
+            taskMap.removeValue(forKey: task.taskIdentifier)
+        }
 
-    func callCompletionHandler(for identifier: String) {
-        guard let handler = backgroundCompletionHandlers[identifier] else {
-            print(" No completion handler found for ID: \(identifier)")
-            return
-        }
-        
-        print(" Calling background completion handler for ID: \(identifier)")
-        handler()
-        backgroundCompletionHandlers.removeValue(forKey: identifier)
+        self.updateProgress(for: item)
     }
     
-    // Persist the inprogress tasks
-    func persistInProgressTasks() {
-        let inProgressItems = downloads.filter { $0.status == .inProgress }
-        let urls = inProgressItems.map { $0.url.absoluteString }
-        UserDefaults.standard.set(urls, forKey: "PendingDownloadURLs")
+    /// Set download urls
+    func setDownloads(urls: [URL]) {
+        downloads = urls.map { DownloadItem(url: $0, fileName: $0.lastPathComponent)}
     }
     
-    // Resume the inprogress download.
-    func resumePersistedDownloads() {
-        if let urlStrings = UserDefaults.standard.array(forKey: "PendingDownloadURLs") as? [String] {
-            let urls = urlStrings.compactMap { URL(string: $0) }
-            enqueueDownloads(urls: urls)
-            UserDefaults.standard.removeObject(forKey: "PendingDownloadURLs") // Clean up
+    
+    /// update download progerss
+    private func updateProgress(for item: DownloadItem) {
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
+            item.status = item.status
+            item.resumeData = item.resumeData
         }
     }
     
-    func pauseAllRunningTasks() {
-        if !pendingQueue.isEmpty {
-            let urls = downloads.map { $0.url.absoluteString }
-            UserDefaults.standard.set(urls, forKey: "allDownloads")
-            for (_, task) in runningTasks {
-                task.suspend()
-            }
-        }
-    }
-    
-    func resumeAllRunningTasks() {
-        if !pendingQueue.isEmpty {
-            if let urlStrings = UserDefaults.standard.array(forKey: "allDownloads") as? [String] {
-                let urls = urlStrings.compactMap { URL(string: $0) }
-                enqueueDownloads(urls: urls)
-                UserDefaults.standard.removeObject(forKey: "allDownloads") // Clean up
-            }
-            for (_, task) in runningTasks {
-                if task.state == .suspended {
-                    task.resume()
-                }
-            }
-        }
-    }
     
 }
 
-extension MyDownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
-    // For Upload progress
-//    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-//
-//    }
+extension MyDownloadManager: URLSessionDownloadDelegate {
     
-    // For Download progress
+    /// Delegate called as data writes, for progress updates
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,
@@ -162,70 +125,73 @@ extension MyDownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
         totalBytesWritten: Int64,
         totalBytesExpectedToWrite: Int64
     ) {
-        let progress: Float
-//        print("Progress -- \(totalBytesExpectedToWrite)")
-        if totalBytesExpectedToWrite > 0 {
-            progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-        } else {
-            progress = 0.0
-        }
-        updateProgress(for: downloadTask, progress: progress)
-    }
-    
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let item = taskMap[downloadTask.taskIdentifier] else { return }
-        let fileName = item.fileName
+        let progress: Float = totalBytesExpectedToWrite > 0 ?
+        Float(totalBytesWritten) / Float(totalBytesExpectedToWrite) : 0
         
-        // Create Document URL
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let destinationURL = documentsDirectory.appending(path: fileName)
-        
-        // Move file to destination location
-        do {
-            // Ensure destination folder exists (usually always does)
-            if !FileManager.default.fileExists(atPath: documentsDirectory.path) {
-                try FileManager.default.createDirectory(at: documentsDirectory, withIntermediateDirectories: true)
-            }
-            
-            // Ensure the source file actually exists before trying to move
-            guard FileManager.default.fileExists(atPath: location.path) else {
-                print("❌ Source file does not exist at: \(location.path)")
-                return
-            }
-            
-            //  Remove old file if needed
-            if FileManager.default.fileExists(atPath: destinationURL.path) {
-                try FileManager.default.removeItem(at: destinationURL)
-            }
-            
-            // Move file
-            try FileManager.default.moveItem(at: location, to: destinationURL)
-            print("✅ File moved to \(destinationURL.lastPathComponent)")
-        } catch {
-            print("❌ Error saving file: \(error.localizedDescription)")
+        DispatchQueue.main.async {
+            item.progress = progress
+            print("⏳  Download In progress - \(progress)")
+            self.updateProgress(for: item)
         }
     }
     
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
-        if let response = task.response as? HTTPURLResponse {
-                print("Status code: \(response.statusCode), URL: \(task.originalRequest?.url?.absoluteString ?? "")")
+    
+    /// Delegate called when download finishes successfully
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didFinishDownloadingTo location: URL
+    ) {
+        guard let item = taskMap[downloadTask.taskIdentifier] else { return }
+        
+        do {
+            // Save the file to disk using your app's file manager
+            CRUDFileManager.shared.saveFile(at: location, name: item.fileName)
+            
+            // Notify completion
+            DispatchQueue.main.async {
+                item.status = .completed
+                item.progress = 1.0
+                self.updateProgress(for: item)
             }
             
-            if let error = error {
-                print("❌ Download error: \(error)")
-            } else {
-                print("✅ Download finished: \(task.originalRequest?.url?.absoluteString ?? "")")
+        } catch {
+            // Handling error in saving file
+            DispatchQueue.main.async {
+                item.status = .failed
+                self.updateProgress(for: item)
+            }
+        }
+    }
+    
+    /// Delegate called when task completes (either error, cancel, success, or resume)
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didCompleteWithError error: Error?
+    ) {
+        if let item = taskMap[task.taskIdentifier] {
+            if let err = error as NSError?,
+               let resumeData = err.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
+                // Save resume data if available
+                DispatchQueue.main.async {
+                    item.resumeData = resumeData
+                    item.status = .pending
+                    self.updateProgress(for: item)
+                }
+            } else if error != nil {
+                // Handle failure with no resume support
+                DispatchQueue.main.async {
+                    item.status = .failed
+                    self.updateProgress(for: item)
+                }
             }
 
-        
-        
-        complete(task: task as! URLSessionDownloadTask, success: error == nil)
-        if pendingQueue.isEmpty {
-            //If you call it inside didCompleteWithError for every task, and multiple downloads are ongoing, iOS may suspend your app prematurely.
-            MyDownloadManager.shared.callCompletionHandler(for: session.configuration.identifier ?? "")
+            // Clear bookkeeping for finished task
+            runningTasks.removeValue(forKey: item.id)
+            taskMap.removeValue(forKey: task.taskIdentifier)
         }
     }
     
 }
-
-

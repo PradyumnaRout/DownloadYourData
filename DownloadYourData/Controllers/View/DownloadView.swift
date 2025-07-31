@@ -7,9 +7,10 @@
 
 import SwiftUI
 
+/// Using MyDownload Manager 
 
 struct DownloadListView: View {
-    @ObservedObject private var manager = AnyHostConcurrentDownloadManager.shared
+    @ObservedObject private var manager = MyDownloadManager.shared
 
     var body: some View {
         NavigationView {
@@ -73,16 +74,16 @@ struct DownloadRow: View {
     private func handleAction() {
         switch item.status {
         case .pending, .failed:
-            AnyHostConcurrentDownloadManager.shared.downloadFile(with: item)
+            MyDownloadManager.shared.statrtDownload(item: item)
         case .inProgress:
-            AnyHostConcurrentDownloadManager.shared.pauseDownload(item: item)
+            MyDownloadManager.shared.pauseDownload(item: item)
         case .completed:
             print("Download completed")
         }
     }
 
     private func cancelAction() {
-        AnyHostConcurrentDownloadManager.shared.cancelDownload(item)
+        MyDownloadManager.shared.cancelDownload(item)
     }
 
     private func actionIconName() -> String {

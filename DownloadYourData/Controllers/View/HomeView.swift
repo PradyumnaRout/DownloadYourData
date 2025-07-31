@@ -5,11 +5,10 @@
 //  Created by hb on 30/07/25.
 //
 
-import SwiftUI
+// CLosure download manager (managing with view model)
 
 import SwiftUI
 
-import SwiftUI
 
 struct HomeView: View {
     @StateObject private var vm = DownloadViewModel()
