@@ -25,6 +25,9 @@ class MyDownloadManager: NSObject, ObservableObject {
     /// All downloads managed by the manager. It will observed by the UI
     @Published var downloads: [DownloadItem] = []
     
+    
+    private var lastReportedProgress: [UUID: Float] = [:]
+    
     private override init() {
         super.init()
         let config = URLSessionConfiguration.default  // Use default for testing concurrency
@@ -48,9 +51,11 @@ class MyDownloadManager: NSObject, ObservableObject {
             // Resume the download with the previous resume data
             task = urlSession.downloadTask(withResumeData: resumeData)
             item.resumeData = nil
+            DownloadActivityManager.shared.updateActivity(id: item.id.uuidString, status: .inpogress, progress: (Int(item.progress * 100)))
         } else {
             // Start new download
             task = urlSession.downloadTask(with: item.url)
+            DownloadActivityManager.shared.startActivity(id: item.id.uuidString, status: .inpogress, fileName: item.fileName, progress: (Int(item.progress * 100)))
         }
         
         runningTasks[item.id] = task
@@ -71,7 +76,6 @@ class MyDownloadManager: NSObject, ObservableObject {
                 item.resumeData = data
                 item.progress = item.progress
                 self.updateProgress(for: item)
-                
                 
                 // Remove bookkeeping for the task
                 self.runningTasks.removeValue(forKey: item.id)
@@ -103,11 +107,40 @@ class MyDownloadManager: NSObject, ObservableObject {
     
     
     /// update download progerss
+//    private func updateProgress(for item: DownloadItem) {
+//        DispatchQueue.main.async {
+//            self.objectWillChange.send()
+//            item.status = item.status
+//            item.resumeData = item.resumeData
+//                        
+//            DownloadActivityManager.shared.updateActivity(id: item.id.uuidString, status: .inpogress, progress: (Int(item.progress * 100)))
+//        }
+//    }
+    
+    
     private func updateProgress(for item: DownloadItem) {
         DispatchQueue.main.async {
             self.objectWillChange.send()
             item.status = item.status
             item.resumeData = item.resumeData
+
+            let currentProgress: Float = item.progress
+            let lastProgress: Float = self.lastReportedProgress[item.id] ?? 0.0
+            
+            // Update if progress advanced by at least 1%
+            let minProgressDifference: Float = 0.01
+            
+            guard currentProgress - lastProgress >= minProgressDifference || currentProgress == 1.0 else {
+                // Skip update if progress change is too small and it's not complete
+                return
+            }
+            
+            self.lastReportedProgress[item.id] = currentProgress
+            
+            // Send progress as integer percent or as Double if your manager accepts fractional
+            let progressPercent = Int(currentProgress * 100)
+            
+            DownloadActivityManager.shared.updateActivity(id: item.id.uuidString, status: .inpogress, progress: progressPercent)
         }
     }
     
@@ -191,6 +224,7 @@ extension MyDownloadManager: URLSessionDownloadDelegate {
             // Clear bookkeeping for finished task
             runningTasks.removeValue(forKey: item.id)
             taskMap.removeValue(forKey: task.taskIdentifier)
+            DownloadActivityManager.shared.endActivity(id: item.id.uuidString, status: .finish, progress: (Int(item.progress * 100)))
         }
     }
     
